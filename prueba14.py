@@ -185,31 +185,42 @@ def funcionvida():
         time.sleep(0.5)  # Reducido el tiempo de espera
 
     print("funcionvida terminada")
+
+def capturar_pantalla_mostruo(x, y, ancho, alto):
+    screenshot = pyautogui.screenshot(region=(x, y, ancho, alto))
+    screenshot.save('captura/captura_pantalla_mostruo.png')
+    return 'captura/captura_pantalla_mostruo.png'
 def imagenmostruo():
+    global moustruovida
     search = buscar_imagen_en_pantalla("otros/mostrous.jpg")
-    if search== False:
+    if search == False:
         if path.exists('captura/captura_pantalla_mostruo.png'):
             remove("captura/captura_pantalla_mostruo.png")
         return False
     else:
         imagen_capturada = capturar_pantalla_mostruo(int(search[0])-4, int(search[1])-7, 270, 15)
-        image = cv2.imread('captura/captura_pantalla_mostruo.png', cv2.IMREAD_GRAYSCALE)
+        image = cv2.imread('captura/captura_pantalla_mostruo.png')
 
-        # Establecer umbrales para identificar la parte llena de la barra
-        # Puedes ajustar estos valores según tus necesidades
-        _, thresh = cv2.threshold(image, 128, 255, cv2.THRESH_BINARY)
+        # Convertir la imagen a espacio de color HSV
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-        # Calcular la cantidad de píxeles blancos (llenados) y la cantidad total de píxeles
-        pixels_filled = np.sum(thresh == 255)
-        total_pixels = thresh.size
+        # Definir el rango de color amarillo en HSV
+        lower_yellow = np.array([20, 100, 100])
+        upper_yellow = np.array([30, 255, 255])
 
-        # Calcular el porcentaje de llenado
-        return (pixels_filled / total_pixels) * 100
-def capturar_pantalla_mostruo(x, y, ancho, alto):
-    screenshot = pyautogui.screenshot(region=(x, y, ancho, alto))
-    # screenshot.show()
-    screenshot.save('captura/captura_pantalla_mostruo.png')
-    return 'captura/captura_pantalla_mostruo.png'
+        # Crear una máscara para el color amarillo
+        mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+
+        # Calcular el porcentaje de píxeles amarillos
+        yellow_pixels = np.sum(mask == 255)
+        total_pixels = mask.size
+
+        # Calcular el porcentaje de llenado (amarillo)
+        percentage = (yellow_pixels / total_pixels) * 100
+
+        moustruovida=percentage
+
+        return percentage
 
 def capturar_pantalla_hp(x, y, ancho, alto):
     screenshot = pyautogui.screenshot(region=(x, y, ancho, alto))
@@ -546,16 +557,60 @@ def funcionBM_optimizada():
 
 
 # funcionBM_optimizada()
+def vida_estancada(vida_anterior, vida_actual, ciclos_sin_bajar, umbral=1, max_ciclos=10):
+    """
+    Retorna True si la vida del monstruo no ha bajado en los últimos ciclos.
+    - umbral: diferencia mínima para considerar que la vida bajó.
+    - max_ciclos: cantidad de ciclos permitidos sin bajar la vida.
+    """
+    print(f"[DEBUG] vida_anterior: {vida_anterior}, vida_actual: {vida_actual}, ciclos_sin_bajar: {ciclos_sin_bajar}")
+    if vida_actual is False:
+        print("[DEBUG] No hay barra de vida detectada.")
+        return True  # No hay barra de vida, salir del combate
+    if vida_actual < vida_anterior - umbral:
+        print("[DEBUG] La vida bajó.")
+        return False  # La vida bajó
+    ciclos_sin_bajar += 1
+    print(f"[DEBUG] La vida NO bajó, ciclos_sin_bajar incrementado a {ciclos_sin_bajar}")
+    if ciclos_sin_bajar >= max_ciclos:
+        print("[DEBUG] Se alcanzó el máximo de ciclos sin bajar la vida.")
+        return True
+    return False
 
 time.sleep(0.5)
+vida_anterior = None
+ciclos_sin_bajar = 0
+
+while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+    print("Iniciando ciclo kong1")  
+    vida_actual = imagenmostruo()
+    print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
+    if vida_anterior is None:
+        vida_anterior = vida_actual
+        ciclos_sin_bajar = 0
+        print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+    else:
+        if vida_actual < vida_anterior - 1:
+            print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+            vida_anterior = vida_actual
+            ciclos_sin_bajar = 0
+        else:
+            ciclos_sin_bajar += 1
+            print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+            if ciclos_sin_bajar >= 3:
+                print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                break
+
+    time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
 # piso8 = buscar_imagen_en_pantalla("acheron/piso5.png")
 # if piso8!=False:
 #     # raton_posicion (piso8[0]+30, piso8[1]-120)
 #     raton_posicion (piso8[0]+50, piso8[1]+150)
-centro_ventana = obtener_centro_ventana(nombre_proceso)
-if centro_ventana:
-    print(f"El centro de la ventana de {nombre_proceso} es ({centro_ventana[0]}, {centro_ventana[1]}).")
-    raton_posicion(centro_ventana[0]-330, centro_ventana[1]+120)
+# centro_ventana = obtener_centro_ventana(nombre_proceso)
+# if centro_ventana:
+#     print(f"El centro de la ventana de {nombre_proceso} es ({centro_ventana[0]}, {centro_ventana[1]}).")
+#     raton_posicion(centro_ventana[0]-330, centro_ventana[1]+120)
 # nombre_proceso = "cabal"
 # centro_ventana3 = obtener_centro_ventana(nombre_proceso)
 # if centro_ventana3:

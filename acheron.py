@@ -14,12 +14,12 @@ import logging
 
 import tkinter as tk
 from tkinter import ttk
-contardg=contadormostruos1= atacar= etapa=contardgok=moustruovida=vida=0
+contardg=contadormostruos1= atacar= etapa=contardgok=moustruovida=vida_actual=vida_anterior=vida=0
 piso=mensaje=""
 bos_detected = False
 
 def crear_ventana_info():
-    global  contardg, atacar, etapa,contardgok, piso,contadormostruos1,vida,bos_detected,mensaje,moustruovida
+    global  contardg, atacar, etapa,contardgok, piso,contadormostruos1,vida,bos_detected,mensaje,moustruovida,vida_actual,vida_anterior
     ventana = tk.Tk()
     ventana.title("Información en tiempo real")
     ventana.geometry("300x350")
@@ -53,7 +53,7 @@ def crear_ventana_info():
 
 
     def actualizar_info():
-        global  contardg, atacar, etapa,contardgok, piso,contadormostruos1,vida,bos_detected,mensaje,moustruovida
+        global  contardg, atacar, etapa,contardgok, piso,contadormostruos1,vida,bos_detected,mensaje,moustruovida,vida_actual,vida_anterior
         etiqueta_dg.config(text=f"DG : {contardg} bos_detected : {bos_detected}")
         etiqueta_dgok.config(text=f"DG ok: {contardgok} mensaje : {mensaje}" )
         etiqueta_atacar.config(text=f"Atacar: {atacar}")
@@ -62,7 +62,7 @@ def crear_ventana_info():
         etiqueta_vida.config(text=f"Vida: {vida} ")
         etiqueta_Vidamostruo.config(text=f"Vidamostruo: {moustruovida}")
 
-        etiqueta_etapa.config(text=f"Etapa inicial: {etapa}")
+        etiqueta_etapa.config(text=f"Etapa inicial: {etapa} \n vida_actual: {vida_actual} \n  vida_anterior: {vida_anterior}")
         ventana.after(1000, actualizar_info)  # Actualizar cada segundo
 
     actualizar_info()
@@ -465,6 +465,9 @@ def imagenmostruo():
     else:
         imagen_capturada = capturar_pantalla_mostruo(int(search[0])-4, int(search[1])-7, 270, 15)
         image = cv2.imread('captura/captura_pantalla_mostruo.png')
+        if image is None:
+            print("[ERROR] No se pudo cargar la imagen del monstruo.")
+            return False  # <-- Agrega este control
 
         # Convertir la imagen a espacio de color HSV
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -1379,6 +1382,8 @@ def funcionetapa():
         global entre
         global nombre_proceso
         global piso
+        global vida_actual
+        global vida_anterior
         global tiempo_inicio
         print("funcionetapa en ejecución")
         time.sleep(1)
@@ -1558,44 +1563,42 @@ def funcionetapa():
                                         print("Monstruo encontrado hacia atrás, esperando a que sea eliminado")
                                         tiempo_inicio_combate = time.time()
                                         vida_anterior = None
-                                        tiempo_sin_cambio = 0
+                                        ciclos_sin_bajar = 0
                                         
                                         while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                                                 print("Iniciando ciclo kong1")  
                                             # Verificar si la vida del monstruo está bajando
                                             # if 'moustruovida' in globals():
                                                 vida_actual = imagenmostruo()
-                                                
-                                                # Inicializar vida_anterior en la primera iteración
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
                                                 if vida_anterior is None:
                                                     vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
-                                                
-                                                # Verificar si la vida ha cambiado
-                                                if abs(vida_actual - vida_anterior) > 1:
-                                                    # La vida está cambiando, actualizar referencia
-                                                    vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
                                                 else:
-                                                    # Calcular tiempo sin cambios significativos
-                                                    tiempo_sin_cambio = time.time() - tiempo_ultimo_cambio
-                                                    
-                                                    # Si han pasado más de 5 segundos sin cambios en la vida
-                                                    if tiempo_sin_cambio > 5:
-                                                        print(f"La vida del monstruo no está bajando ({vida_actual:.2f}%), continuando camino")
-                                                        
-                                                        
-                                                        break
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
                                         direccion_busqueda = 1
                                         pasos_completados = 0
                                             
-                                            # Si el combate dura demasiado, continuar
-                                            # if time.time() - tiempo_inicio_combate > 15:
-                                            #     print("Combate demasiado largo, continuando camino")
-                                            #     atacar = 0
-                                            #     break
-                                                
-                                            # time.sleep(1)  # Esperar mientras hay monstruos
                                 else:
                                     # Completó los 2 pasos hacia atrás, cambiar dirección
                                     direccion_busqueda = 1
@@ -1616,42 +1619,41 @@ def funcionetapa():
                                         print("Monstruo encontrado hacia adelante, esperando a que sea eliminado")
                                         tiempo_inicio_combate = time.time()
                                         vida_anterior = None
-                                        tiempo_sin_cambio = 0
+                                        ciclos_sin_bajar = 0
                                         
                                         while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                                                 print("Iniciando ciclo kong2")
                                             # Verificar si la vida del monstruo está bajando
                                             # if 'moustruovida' in globals():
                                                 vida_actual = imagenmostruo()
-                                                
-                                                # Inicializar vida_anterior en la primera iteración
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
                                                 if vida_anterior is None:
                                                     vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
-                                                
-                                                # Verificar si la vida ha cambiado
-                                                if abs(vida_actual - vida_anterior) > 1:
-                                                    # La vida está cambiando, actualizar referencia
-                                                    vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
                                                 else:
-                                                    # Calcular tiempo sin cambios significativos
-                                                    tiempo_sin_cambio = time.time() - tiempo_ultimo_cambio
-                                                    
-                                                    # Si han pasado más de 5 segundos sin cambios en la vida
-                                                    if tiempo_sin_cambio > 5:
-                                                        print(f"La vida del monstruo no está bajando ({vida_actual:.2f}%), continuando camino")
-                                                        break
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
                                         direccion_busqueda = 2
                                         pasos_completados = 0
-                                            
-                                            # Si el combate dura demasiado, continuar
-                                            # if time.time() - tiempo_inicio_combate > 15:
-                                            #     print("Combate demasiado largo, continuando camino")
-                                            #     atacar = 0
-                                            #     break
-                                                
-                                            # time.sleep(1)  # Esperar mientras hay monstruos
                                 else:
                                     # Completó los 4 pasos hacia adelante, cambiar dirección
                                     direccion_busqueda = 2
@@ -1670,41 +1672,46 @@ def funcionetapa():
                                         print("Monstruo encontrado al regresar, esperando a que sea eliminado")
                                         tiempo_inicio_combate = time.time()
                                         vida_anterior = None
-                                        tiempo_sin_cambio = 0
+                                        ciclos_sin_bajar = 0
                                         
                                         while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                                                 print("Iniciando ciclo kong3")
-                                            # Verificar si la vida del monstruo está bajando
-                                            # if 'moustruovida' in globals():
+
                                                 vida_actual = imagenmostruo()
-                                                
-                                                # Inicializar vida_anterior en la primera iteración
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
                                                 if vida_anterior is None:
                                                     vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
-                                                
-                                                # Verificar si la vida ha cambiado
-                                                if abs(vida_actual - vida_anterior) > 1:
-                                                    # La vida está cambiando, actualizar referencia
-                                                    vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
                                                 else:
-                                                    # Calcular tiempo sin cambios significativos
-                                                    tiempo_sin_cambio = time.time() - tiempo_ultimo_cambio
-                                                    
-                                                    # Si han pasado más de 5 segundos sin cambios en la vida
-                                                    if tiempo_sin_cambio > 5:
-                                                        print(f"La vida del monstruo no está bajando ({vida_actual:.2f}%), continuando camino")
-                                                        atacar = 0
-                                                        contadormostruos1 = 4
-                                                        etapa=11
-                                                        entre=0
-                                                        break
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            contadormostruos1 = 4
+                                                            etapa=11
+                                                            entre=0
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
+
                                         contadormostruos1 = 4
                                         etapa=11
                                         entre=0
                                         direccion_busqueda = 3
-                                            
                                             # Si el combate dura demasiado, continuar
                                             # if time.time() - tiempo_inicio_combate > 15:
                                             #     print("Combate demasiado largo, continuando camino")
@@ -1712,9 +1719,12 @@ def funcionetapa():
                                             #     break
                                                 
                                             # time.sleep(1)  # Esperar mientras hay monstruos
-                                else:
-                                    # Completó los 2 pasos de regreso, terminar ciclo
-                                    direccion_busqueda = 3
+                                    else:
+                                        # Completó los 2 pasos de regreso, terminar ciclo.
+                                        contadormostruos1 = 4
+                                        etapa=11
+                                        entre=0
+                                        direccion_busqueda = 3
                     
             if etapa==11 and contadormostruos1>3:
                 atacar = 0
@@ -1799,7 +1809,6 @@ def funcionetapa():
                     last_known_position7 = piso7
                     etapa=14
             if etapa==14:
-                entre=0
                 npc = buscar_imagen_en_pantalla("acheron/npc.png")
                 time.sleep(0.3)
                 if npc:
@@ -1822,6 +1831,7 @@ def funcionetapa():
                             keyboard.release(key)
                             time.sleep(delay_between_keys)
                         atacar = 1
+                        keyboard.press_and_release("z")
                         entre=1
                     # Solo ejecutar la búsqueda si no hay monstruos visibles
                     if not buscar_imagen_en_pantalla("otros/mostrous.jpg") and contadormostruos1>2 and entre==1:
@@ -1848,42 +1858,42 @@ def funcionetapa():
                                         print("Monstruo encontrado hacia atrás, esperando a que sea eliminado")
                                         tiempo_inicio_combate = time.time()
                                         vida_anterior = None
-                                        tiempo_sin_cambio = 0
+                                        ciclos_sin_bajar = 0
                                         
                                         while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                                                 print("Iniciando ciclo kong1")  
                                             # Verificar si la vida del monstruo está bajando
                                             # if 'moustruovida' in globals():
                                                 vida_actual = imagenmostruo()
-                                                
-                                                # Inicializar vida_anterior en la primera iteración
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
                                                 if vida_anterior is None:
                                                     vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
-                                                
-                                                # Verificar si la vida ha cambiado
-                                                if abs(vida_actual - vida_anterior) > 1:
-                                                    # La vida está cambiando, actualizar referencia
-                                                    vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
                                                 else:
-                                                    # Calcular tiempo sin cambios significativos
-                                                    tiempo_sin_cambio = time.time() - tiempo_ultimo_cambio
-                                                    
-                                                    # Si han pasado más de 5 segundos sin cambios en la vida
-                                                    if tiempo_sin_cambio > 5:
-                                                        print(f"La vida del monstruo no está bajando ({vida_actual:.2f}%), continuando camino")
-                                                        
-                                                        
-                                                        break
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
+                                        direccion_busqueda = 1
+                                        pasos_completados = 0
                                             
-                                            # Si el combate dura demasiado, continuar
-                                            # if time.time() - tiempo_inicio_combate > 15:
-                                            #     print("Combate demasiado largo, continuando camino")
-                                            #     atacar = 0
-                                            #     break
-                                                
-                                            # time.sleep(1)  # Esperar mientras hay monstruos
                                 else:
                                     # Completó los 2 pasos hacia atrás, cambiar dirección
                                     direccion_busqueda = 1
@@ -1904,42 +1914,41 @@ def funcionetapa():
                                         print("Monstruo encontrado hacia adelante, esperando a que sea eliminado")
                                         tiempo_inicio_combate = time.time()
                                         vida_anterior = None
-                                        tiempo_sin_cambio = 0
+                                        ciclos_sin_bajar = 0
                                         
                                         while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                                                 print("Iniciando ciclo kong2")
                                             # Verificar si la vida del monstruo está bajando
                                             # if 'moustruovida' in globals():
                                                 vida_actual = imagenmostruo()
-                                                
-                                                # Inicializar vida_anterior en la primera iteración
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
                                                 if vida_anterior is None:
                                                     vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
-                                                
-                                                # Verificar si la vida ha cambiado
-                                                if abs(vida_actual - vida_anterior) > 1:
-                                                    # La vida está cambiando, actualizar referencia
-                                                    vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
                                                 else:
-                                                    # Calcular tiempo sin cambios significativos
-                                                    tiempo_sin_cambio = time.time() - tiempo_ultimo_cambio
-                                                    
-                                                    # Si han pasado más de 5 segundos sin cambios en la vida
-                                                    if tiempo_sin_cambio > 5:
-                                                        print(f"La vida del monstruo no está bajando ({vida_actual:.2f}%), continuando camino")
-                                                       
-                                                        
-                                                        break
-                                            
-                                            # Si el combate dura demasiado, continuar
-                                            # if time.time() - tiempo_inicio_combate > 15:
-                                            #     print("Combate demasiado largo, continuando camino")
-                                            #     atacar = 0
-                                            #     break
-                                                
-                                            # time.sleep(1)  # Esperar mientras hay monstruos
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
+                                        direccion_busqueda = 2
+                                        pasos_completados = 0
                                 else:
                                     # Completó los 4 pasos hacia adelante, cambiar dirección
                                     direccion_busqueda = 2
@@ -1958,38 +1967,46 @@ def funcionetapa():
                                         print("Monstruo encontrado al regresar, esperando a que sea eliminado")
                                         tiempo_inicio_combate = time.time()
                                         vida_anterior = None
-                                        tiempo_sin_cambio = 0
+                                        ciclos_sin_bajar = 0
                                         
                                         while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                                                 print("Iniciando ciclo kong3")
-                                            # Verificar si la vida del monstruo está bajando
-                                            # if 'moustruovida' in globals():
+
                                                 vida_actual = imagenmostruo()
-                                                
-                                                # Inicializar vida_anterior en la primera iteración
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
                                                 if vida_anterior is None:
                                                     vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
-                                                
-                                                # Verificar si la vida ha cambiado
-                                                if abs(vida_actual - vida_anterior) > 1:
-                                                    # La vida está cambiando, actualizar referencia
-                                                    vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
                                                 else:
-                                                    # Calcular tiempo sin cambios significativos
-                                                    tiempo_sin_cambio = time.time() - tiempo_ultimo_cambio
-                                                    
-                                                    # Si han pasado más de 5 segundos sin cambios en la vida
-                                                    if tiempo_sin_cambio > 5:
-                                                        print(f"La vida del monstruo no está bajando ({vida_actual:.2f}%), continuando camino")
-                                                        atacar = 0
-                                                        contadormostruos1 = 4
-                                                        etapa=15
-                                                        break
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            contadormostruos1 = 4
+                                                            etapa=15
+                                                            entre=0
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
+
                                         contadormostruos1 = 4
                                         etapa=15
-                                            
+                                        entre=0
+                                        direccion_busqueda = 3
                                             # Si el combate dura demasiado, continuar
                                             # if time.time() - tiempo_inicio_combate > 15:
                                             #     print("Combate demasiado largo, continuando camino")
@@ -1997,9 +2014,14 @@ def funcionetapa():
                                             #     break
                                                 
                                             # time.sleep(1)  # Esperar mientras hay monstruos
-                                else:
-                                    # Completó los 2 pasos de regreso, terminar ciclo
-                                    direccion_busqueda = 3
+                                    else:
+                                        # Completó los 2 pasos de regreso, terminar ciclo.
+                                        contadormostruos1 = 4
+                                        etapa=15
+                                        entre=0
+                                        direccion_busqueda = 3
+
+
             if etapa==15 and contadormostruos1>3:
                 atacar = 0
                 
@@ -2063,7 +2085,6 @@ def funcionetapa():
                     last_known_position9 = piso9
                     etapa=18
             if etapa==18:
-                entre=0
                 npc = buscar_imagen_en_pantalla("acheron/npc.png")
                 time.sleep(0.3)
                 if npc:
@@ -2085,6 +2106,7 @@ def funcionetapa():
                             keyboard.release(key)
                             time.sleep(delay_between_keys)
                         atacar = 1
+                        keyboard.press_and_release("z")
                         entre=1
                     # Solo ejecutar la búsqueda si no hay monstruos visibles
                     if not buscar_imagen_en_pantalla("otros/mostrous.jpg") and contadormostruos1>2 and entre==1:
@@ -2111,42 +2133,42 @@ def funcionetapa():
                                         print("Monstruo encontrado hacia atrás, esperando a que sea eliminado")
                                         tiempo_inicio_combate = time.time()
                                         vida_anterior = None
-                                        tiempo_sin_cambio = 0
+                                        ciclos_sin_bajar = 0
                                         
                                         while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                                                 print("Iniciando ciclo kong1")  
                                             # Verificar si la vida del monstruo está bajando
                                             # if 'moustruovida' in globals():
                                                 vida_actual = imagenmostruo()
-                                                
-                                                # Inicializar vida_anterior en la primera iteración
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
                                                 if vida_anterior is None:
                                                     vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
-                                                
-                                                # Verificar si la vida ha cambiado
-                                                if abs(vida_actual - vida_anterior) > 1:
-                                                    # La vida está cambiando, actualizar referencia
-                                                    vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
                                                 else:
-                                                    # Calcular tiempo sin cambios significativos
-                                                    tiempo_sin_cambio = time.time() - tiempo_ultimo_cambio
-                                                    
-                                                    # Si han pasado más de 5 segundos sin cambios en la vida
-                                                    if tiempo_sin_cambio > 5:
-                                                        print(f"La vida del monstruo no está bajando ({vida_actual:.2f}%), continuando camino")
-                                                        
-                                                        
-                                                        break
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
+                                        direccion_busqueda = 1
+                                        pasos_completados = 0
                                             
-                                            # Si el combate dura demasiado, continuar
-                                            # if time.time() - tiempo_inicio_combate > 15:
-                                            #     print("Combate demasiado largo, continuando camino")
-                                            #     atacar = 0
-                                            #     break
-                                                
-                                            # time.sleep(1)  # Esperar mientras hay monstruos
                                 else:
                                     # Completó los 2 pasos hacia atrás, cambiar dirección
                                     direccion_busqueda = 1
@@ -2167,42 +2189,41 @@ def funcionetapa():
                                         print("Monstruo encontrado hacia adelante, esperando a que sea eliminado")
                                         tiempo_inicio_combate = time.time()
                                         vida_anterior = None
-                                        tiempo_sin_cambio = 0
+                                        ciclos_sin_bajar = 0
                                         
                                         while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                                                 print("Iniciando ciclo kong2")
                                             # Verificar si la vida del monstruo está bajando
                                             # if 'moustruovida' in globals():
                                                 vida_actual = imagenmostruo()
-                                                
-                                                # Inicializar vida_anterior en la primera iteración
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
                                                 if vida_anterior is None:
                                                     vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
-                                                
-                                                # Verificar si la vida ha cambiado
-                                                if abs(vida_actual - vida_anterior) > 1:
-                                                    # La vida está cambiando, actualizar referencia
-                                                    vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
                                                 else:
-                                                    # Calcular tiempo sin cambios significativos
-                                                    tiempo_sin_cambio = time.time() - tiempo_ultimo_cambio
-                                                    
-                                                    # Si han pasado más de 5 segundos sin cambios en la vida
-                                                    if tiempo_sin_cambio > 5:
-                                                        print(f"La vida del monstruo no está bajando ({vida_actual:.2f}%), continuando camino")
-                                                       
-                                                        
-                                                        break
-                                            
-                                            # Si el combate dura demasiado, continuar
-                                            # if time.time() - tiempo_inicio_combate > 15:
-                                            #     print("Combate demasiado largo, continuando camino")
-                                            #     atacar = 0
-                                            #     break
-                                                
-                                            # time.sleep(1)  # Esperar mientras hay monstruos
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
+                                        direccion_busqueda = 2
+                                        pasos_completados = 0
                                 else:
                                     # Completó los 4 pasos hacia adelante, cambiar dirección
                                     direccion_busqueda = 2
@@ -2221,48 +2242,54 @@ def funcionetapa():
                                         print("Monstruo encontrado al regresar, esperando a que sea eliminado")
                                         tiempo_inicio_combate = time.time()
                                         vida_anterior = None
-                                        tiempo_sin_cambio = 0
+                                        ciclos_sin_bajar = 0
                                         
                                         while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                                                 print("Iniciando ciclo kong3")
-                                            # Verificar si la vida del monstruo está bajando
-                                            # if 'moustruovida' in globals():
+
                                                 vida_actual = imagenmostruo()
-                                                
-                                                # Inicializar vida_anterior en la primera iteración
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
                                                 if vida_anterior is None:
                                                     vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
-                                                
-                                                # Verificar si la vida ha cambiado
-                                                if abs(vida_actual - vida_anterior) > 1:
-                                                    # La vida está cambiando, actualizar referencia
-                                                    vida_anterior = vida_actual
-                                                    tiempo_ultimo_cambio = time.time()
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
                                                 else:
-                                                    # Calcular tiempo sin cambios significativos
-                                                    tiempo_sin_cambio = time.time() - tiempo_ultimo_cambio
-                                                    
-                                                    # Si han pasado más de 5 segundos sin cambios en la vida
-                                                    if tiempo_sin_cambio > 5:
-                                                        print(f"La vida del monstruo no está bajando ({vida_actual:.2f}%), continuando camino")
-                                                        atacar = 0
-                                                        contadormostruos1 = 4
-                                                        etapa=19
-                                                        break
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            contadormostruos1 = 4
+                                                            etapa=19
+                                                            entre=0
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
+
                                         contadormostruos1 = 4
                                         etapa=19
-                                            
-                                            # Si el combate dura demasiado, continuar
-                                            # if time.time() - tiempo_inicio_combate > 15:
-                                            #     print("Combate demasiado largo, continuando camino")
-                                            #     atacar = 0
-                                            #     break
-                                                
-                                            # time.sleep(1)  # Esperar mientras hay monstruos
-                                else:
-                                    # Completó los 2 pasos de regreso, terminar ciclo
-                                    direccion_busqueda = 3
+                                        entre=0
+                                        direccion_busqueda = 3
+                                    else:
+                                        # Completó los 2 pasos de regreso, terminar ciclo.
+                                        contadormostruos1 = 4
+                                        etapa=19
+                                        entre=0
+                                        direccion_busqueda = 3
+
+
             if etapa==19 and contadormostruos1>3:
                 atacar = 0
                 raton_posicion(centro_ventana[0]-5, centro_ventana[1]-250)
