@@ -578,39 +578,101 @@ def vida_estancada(vida_anterior, vida_actual, ciclos_sin_bajar, umbral=1, max_c
     return False
 
 time.sleep(0.5)
-vida_anterior = None
-ciclos_sin_bajar = 0
 
-while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
-    print("Iniciando ciclo kong1")  
-    vida_actual = imagenmostruo()
-    print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+caja_images = [
+    # "otros/caja.png",
+    # "otros/cofre.png",
+    # "otros/cofre1.png",
+    # "otros/cofre2.png",
+    "otros/caja1.png",
+    "acheron/rojo2.png",
+    "acheron/rojo1.png",
+    "acheron/master1.png",
+    "acheron/bos1_name.png",
+    "acheron/bos3_name.png",
+]
+for caja_img in caja_images:
+    caja = buscar_imagen_en_pantalla(caja_img)
+    if caja:
+        raton_posicion(caja[0], caja[1])
+# raton_posicion(centro_ventana[0]+100, centro_ventana[1]-150)
+# keyboard.press_and_release(".")
+# time.sleep(0.9)
+# keyboard.press_and_release(",")
+# time.sleep(0.7)
+# keyboard.press_and_release(".")
+# time.sleep(0.9)
+# keyboard.press_and_release(",")
+# time.sleep(0.7)
+# keys = ['e','e']
+# hold_time = 2  # Tiempo que se mantiene presionada cada tecla (en segundos)
+# delay_between_keys = 0.5  # Tiempo de espera entre soltar una tecla y presionar la siguiente
+# for key in keys:
+#     keyboard.press(key)
+#     time.sleep(hold_time)
+#     keyboard.release(key)
+#     time.sleep(delay_between_keys)
+# keys = ['s']
+# hold_time = 0.5  # Tiempo que se mantiene presionada cada tecla (en segundos)
+# delay_between_keys = 0.5  # Tiempo de espera entre soltar una tecla y presionar la siguiente
+# for key in keys:
+#     keyboard.press(key)
+#     time.sleep(hold_time)
+#     keyboard.release(key)
+#     time.sleep(delay_between_keys)
+# raton_posicion(centro_ventana[0]-300, centro_ventana[1]+20)
+# keyboard.press_and_release(".")
+# time.sleep(1.2)
+# raton_posicion(centro_ventana[0]-40, centro_ventana[1]-300)
+# keyboard.press_and_release(".")
+# time.sleep(0.9)
+# keyboard.press_and_release(",")
+# time.sleep(0.7)
+# keyboard.press_and_release(".")
+# time.sleep(0.9)
+# keyboard.press_and_release(",")
+# time.sleep(0.7)
+# raton_posicion(centro_ventana[0]-40, centro_ventana[1]+300)
+# keyboard.press_and_release(".")
+# time.sleep(0.9)
+# keyboard.press_and_release(",")
+# time.sleep(0.7)
+# keyboard.press_and_release(".")
+# time.sleep(0.9)
+# vida_anterior = None
+# ciclos_sin_bajar = 0
 
-    if vida_anterior is None:
-        vida_anterior = vida_actual
-        ciclos_sin_bajar = 0
-        print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
-    else:
-        if vida_actual < vida_anterior - 1:
-            print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
-            vida_anterior = vida_actual
-            ciclos_sin_bajar = 0
-        else:
-            ciclos_sin_bajar += 1
-            print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
-            if ciclos_sin_bajar >= 3:
-                print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
-                break
+# while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+#     print("Iniciando ciclo kong1")  
+#     vida_actual = imagenmostruo()
+#     print(f"[DEBUG] vida_actual detectada: {vida_actual}")
 
-    time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
-# piso8 = buscar_imagen_en_pantalla("acheron/piso5.png")
+#     if vida_anterior is None:
+#         vida_anterior = vida_actual
+#         ciclos_sin_bajar = 0
+#         print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+#     else:
+#         if vida_actual < vida_anterior - 1:
+#             print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+#             vida_anterior = vida_actual
+#             ciclos_sin_bajar = 0
+#         else:
+#             ciclos_sin_bajar += 1
+#             print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+#             if ciclos_sin_bajar >= 3:
+#                 print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+#                 break
+
+#     time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
+# piso8 = buscar_imagen_en_pantalla("manager_cabal.png")
 # if piso8!=False:
 #     # raton_posicion (piso8[0]+30, piso8[1]-120)
-#     raton_posicion (piso8[0]+50, piso8[1]+150)
+#     raton_posicion (piso8[0], piso8[1])
 # centro_ventana = obtener_centro_ventana(nombre_proceso)
 # if centro_ventana:
 #     print(f"El centro de la ventana de {nombre_proceso} es ({centro_ventana[0]}, {centro_ventana[1]}).")
-#     raton_posicion(centro_ventana[0]-330, centro_ventana[1]+120)
+#     raton_posicion (centro_ventana[0], centro_ventana[1])
+
 # nombre_proceso = "cabal"
 # centro_ventana3 = obtener_centro_ventana(nombre_proceso)
 # if centro_ventana3:

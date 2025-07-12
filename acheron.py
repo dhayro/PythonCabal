@@ -512,22 +512,29 @@ def funcioncaja():
             atacar = 1
 
         caja_images = [
-            "otros/caja.png",
-            "otros/cofre.png",
-            "otros/cofre1.png",
-            "otros/cofre2.png",
+            # "otros/caja.png",
+            # "otros/cofre.png",
+            # "otros/cofre1.png",
+            # "otros/cofre2.png",
             "otros/caja1.png",
+            "acheron/rojo2.png",
+            "acheron/rojo1.png",
+            "acheron/master1.png",
             "acheron/bos1_name.png",
             "acheron/bos3_name.png",
         ]
         for caja_img in caja_images:
             caja = buscar_imagen_en_pantalla(caja_img)
             if caja:
-                raton_posicion(caja[0], caja[1]+10)
-                pyautogui.click(button='left')
-                print(f'detecte {caja_img}')
-                keyboard.press_and_release("space")
-                keyboard.press_and_release("space")
+                # Verificar si la posición Y está fuera del rango 165-170
+                if caja[1] < 150 or caja[1] > 170:
+                    raton_posicion(caja[0], caja[1]+10)
+                    pyautogui.click(button='left')
+                    print(f'detecte {caja_img} en posición Y: {caja[1]} (fuera del rango 165-170)')
+                    keyboard.press_and_release("space")
+                    keyboard.press_and_release("space")
+                else:
+                    print(f'detecte {caja_img} en posición Y: {caja[1]} (dentro del rango 165-170, no se hace clic)')
     print("funcionmostruo terminada")
         
     
@@ -557,7 +564,7 @@ def funcionmostruo():
             etapa=28
 
         # Check specifically for "acheron/bos2.png"
-        if buscar_imagen_en_pantalla("acheron/bos2.png"):
+        if buscar_imagen_en_pantalla("acheron/bos2.png") or buscar_imagen_en_pantalla("acheron/bos2_1.png"):
             print("Bos2 detected, handling separately")
             # Add any specific logic for "bos2" here if needed
             bos2_detected = True
@@ -621,7 +628,7 @@ def funcionmostruo():
             #             keyboard.press_and_release("z")
             #             if buscar_imagen_en_pantalla("acheron/caja.png"):
             #                 atacar=1
-            #                 caja_detected = True
+            #-                 caja_detected = True
             #         else:
             #             contadormostruos1 += 1
         if bos2_detected and not (bos_detected or caja_detected) :
@@ -662,7 +669,7 @@ def obtener_centro_ventana(nombre_proceso):
 
 import pygetwindow as gw
 def funcionBM():
-    global stop_flag, bm3WI1, bm2WI1, vidamostruo, dungeon, tiempo_transcurrido, tiempo_inicio,atacar,contadormostruos1,bosfinal1
+    global stop_flag, bm3WI1, bm2WI1, vidamostruo, dungeon, tiempo_transcurrido, tiempo_inicio,atacar,contadormostruos1,bosfinal1,etapa
 
     imagen_presente = False
 
@@ -687,10 +694,8 @@ def funcionBM():
             time.sleep(0.5)
             keyboard.press_and_release("f12")
 
-        imagen_a_buscar_bosfinal = "acheron/bosfinal.png"  # Reemplaza con la ruta de tu propia imagen
-        if buscar_imagen_en_pantalla(imagen_a_buscar_bosfinal):
-            bosfinal1 = True
-        if bosfinal1 and bm2WI and vidamostruo  and not (bm3WI1 or bm2WI1):
+        
+        if etapa >27 and bm2WI and vidamostruo  and not (bm3WI1 or bm2WI1):
             keyboard.press_and_release("F10")
 
         # if bm2WI and vidamostruo  and not (bm3WI1 or bm2WI1):
@@ -1576,11 +1581,15 @@ def funcionetapa():
                                                     vida_anterior = vida_actual
                                                     ciclos_sin_bajar = 0
                                                     print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
                                                 else:
                                                     if vida_actual < vida_anterior - 1:
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
                                                         print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
@@ -1606,7 +1615,7 @@ def funcionetapa():
                             
                             elif direccion_busqueda == 1:  # Búsqueda hacia adelante
                                 print("Iniciando ciclo kongv2")
-                                if pasos_completados < 3:
+                                if pasos_completados < 2:
                                     raton_posicion(centro_ventana[0]+330, centro_ventana[1]-100)
                                     keyboard.press_and_release(",")
                                     time.sleep(1)
@@ -1632,11 +1641,15 @@ def funcionetapa():
                                                     vida_anterior = vida_actual
                                                     ciclos_sin_bajar = 0
                                                     print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
                                                 else:
                                                     if vida_actual < vida_anterior - 1:
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
                                                         print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
@@ -1684,11 +1697,15 @@ def funcionetapa():
                                                     vida_anterior = vida_actual
                                                     ciclos_sin_bajar = 0
                                                     print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
                                                 else:
                                                     if vida_actual < vida_anterior - 1:
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
                                                         print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
@@ -1701,7 +1718,6 @@ def funcionetapa():
                                                             time.sleep(1)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
-                                                            contadormostruos1 = 4
                                                             etapa=11
                                                             entre=0
                                                             break
@@ -1845,7 +1861,7 @@ def funcionetapa():
                             print("Iniciando ciclo kong")
                             if direccion_busqueda == 0:  # Búsqueda hacia atrás
                                 print("Iniciando ciclo kongv1")
-                                if pasos_completados < 2:
+                                if pasos_completados < 3:
                                     raton_posicion(centro_ventana[0]-100, centro_ventana[1]+150)
                                     keyboard.press_and_release(",")
                                     time.sleep(1)
@@ -1871,11 +1887,15 @@ def funcionetapa():
                                                     vida_anterior = vida_actual
                                                     ciclos_sin_bajar = 0
                                                     print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
                                                 else:
                                                     if vida_actual < vida_anterior - 1:
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
                                                         print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
@@ -1901,7 +1921,7 @@ def funcionetapa():
                             
                             elif direccion_busqueda == 1:  # Búsqueda hacia adelante
                                 print("Iniciando ciclo kongv2")
-                                if pasos_completados < 3:
+                                if pasos_completados < 4:
                                     raton_posicion(centro_ventana[0]+100, centro_ventana[1]-150)
                                     keyboard.press_and_release(",")
                                     time.sleep(1)
@@ -1927,11 +1947,15 @@ def funcionetapa():
                                                     vida_anterior = vida_actual
                                                     ciclos_sin_bajar = 0
                                                     print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
                                                 else:
                                                     if vida_actual < vida_anterior - 1:
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
                                                         print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
@@ -1956,7 +1980,7 @@ def funcionetapa():
                             
                             elif direccion_busqueda == 2:  # Regreso a posición original
                                 print("Iniciando ciclo kongv3")
-                                if pasos_completados < 1:
+                                if pasos_completados < 2:
                                     raton_posicion(centro_ventana[0]-100, centro_ventana[1]+150)
                                     keyboard.press_and_release(",")
                                     time.sleep(1)
@@ -1979,11 +2003,15 @@ def funcionetapa():
                                                     vida_anterior = vida_actual
                                                     ciclos_sin_bajar = 0
                                                     print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
                                                 else:
                                                     if vida_actual < vida_anterior - 1:
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
                                                         print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
@@ -1996,7 +2024,6 @@ def funcionetapa():
                                                             time.sleep(1)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
-                                                            contadormostruos1 = 4
                                                             etapa=15
                                                             entre=0
                                                             break
@@ -2058,8 +2085,26 @@ def funcionetapa():
                 etapa=16
             if etapa==16:
                 piso8 = buscar_imagen_en_pantalla("acheron/piso8_4.png")
+                
                 if not  piso8:
-                    keys = ['s','s','s','s','s','e','w','w','w','w','e','s','s','s','s','s','e','w','w','w','w','e','s','s','s','s','s']
+                    raton_posicion(centro_ventana[0]+100, centro_ventana[1]-150)
+                    keyboard.press_and_release(".")
+                    time.sleep(0.9)
+                    keyboard.press_and_release(",")
+                    time.sleep(0.7)
+                    keyboard.press_and_release(".")
+                    time.sleep(0.9)
+                    keyboard.press_and_release(",")
+                    time.sleep(0.7)
+                    keys = ['e','e']
+                    hold_time = 2  # Tiempo que se mantiene presionada cada tecla (en segundos)
+                    delay_between_keys = 0.5  # Tiempo de espera entre soltar una tecla y presionar la siguiente
+                    for key in keys:
+                        keyboard.press(key)
+                        time.sleep(hold_time)
+                        keyboard.release(key)
+                        time.sleep(delay_between_keys)
+                    keys = ['s']
                     hold_time = 0.5  # Tiempo que se mantiene presionada cada tecla (en segundos)
                     delay_between_keys = 0.5  # Tiempo de espera entre soltar una tecla y presionar la siguiente
                     for key in keys:
@@ -2067,9 +2112,28 @@ def funcionetapa():
                         time.sleep(hold_time)
                         keyboard.release(key)
                         time.sleep(delay_between_keys)
-                        piso8 = buscar_imagen_en_pantalla("acheron/piso8_4.png")
-                        if piso8:
-                            break
+                    raton_posicion(centro_ventana[0]-300, centro_ventana[1]+20)
+                    keyboard.press_and_release(".")
+                    time.sleep(1.2)
+                    raton_posicion(centro_ventana[0]-40, centro_ventana[1]-300)
+                    keyboard.press_and_release(".")
+                    time.sleep(0.9)
+                    keyboard.press_and_release(",")
+                    time.sleep(0.7)
+                    keyboard.press_and_release(".")
+                    time.sleep(0.9)
+                    keyboard.press_and_release(",")
+                    time.sleep(0.7)
+                    raton_posicion(centro_ventana[0]-40, centro_ventana[1]+300)
+                    keyboard.press_and_release(".")
+                    time.sleep(0.9)
+                    keyboard.press_and_release(",")
+                    time.sleep(0.7)
+                    keyboard.press_and_release(".")
+                    time.sleep(0.9)
+                    piso8 = buscar_imagen_en_pantalla("acheron/piso8_4.png")
+                    if not piso8:
+                        piso8 = buscar_imagen_en_pantalla("acheron/piso8_5.png")
                 if piso8:
                     raton_posicion(piso8[0], piso8[1]+50)
                     keyboard.press_and_release(".")
@@ -2120,7 +2184,7 @@ def funcionetapa():
                             print("Iniciando ciclo kong")
                             if direccion_busqueda == 0:  # Búsqueda hacia atrás
                                 print("Iniciando ciclo kongv1")
-                                if pasos_completados < 2:
+                                if pasos_completados < 3:
                                     raton_posicion(centro_ventana[0]+5, centro_ventana[1]+250)
                                     keyboard.press_and_release(",")
                                     time.sleep(1)
@@ -2146,11 +2210,15 @@ def funcionetapa():
                                                     vida_anterior = vida_actual
                                                     ciclos_sin_bajar = 0
                                                     print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
                                                 else:
                                                     if vida_actual < vida_anterior - 1:
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
                                                         print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
@@ -2176,7 +2244,7 @@ def funcionetapa():
                             
                             elif direccion_busqueda == 1:  # Búsqueda hacia adelante
                                 print("Iniciando ciclo kongv2")
-                                if pasos_completados < 3:
+                                if pasos_completados < 4:
                                     raton_posicion(centro_ventana[0]-5, centro_ventana[1]-250)
                                     keyboard.press_and_release(",")
                                     time.sleep(1)
@@ -2202,11 +2270,15 @@ def funcionetapa():
                                                     vida_anterior = vida_actual
                                                     ciclos_sin_bajar = 0
                                                     print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
                                                 else:
                                                     if vida_actual < vida_anterior - 1:
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
                                                         print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
@@ -2254,11 +2326,15 @@ def funcionetapa():
                                                     vida_anterior = vida_actual
                                                     ciclos_sin_bajar = 0
                                                     print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
                                                 else:
                                                     if vida_actual < vida_anterior - 1:
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
                                                         print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
@@ -2271,7 +2347,6 @@ def funcionetapa():
                                                             time.sleep(1)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
-                                                            contadormostruos1 = 4
                                                             etapa=19
                                                             entre=0
                                                             break
@@ -2340,18 +2415,49 @@ def funcionetapa():
      
             if etapa==20:
                 piso10 = buscar_imagen_en_pantalla("acheron/piso10.png")
+                if not piso10:
+                    piso10 = buscar_imagen_en_pantalla("acheron/piso10_1.png")
                 if not  piso10:
-                    keys = ['s','s','s','s','s','e','w','w','w','w','e','s','s','s','s','s','e','w','w','w','w','e','s','s','s','s','s']
-                    hold_time = 0.5  # Tiempo que se mantiene presionada cada tecla (en segundos)
+                    raton_posicion(centro_ventana[0]-5, centro_ventana[1]-250)
+                    keyboard.press_and_release(".")
+                    time.sleep(0.9)
+                    keyboard.press_and_release(",")
+                    time.sleep(0.7)
+                    keyboard.press_and_release(".")
+                    time.sleep(0.9)
+                    keyboard.press_and_release(",")
+                    time.sleep(0.7)
+                    keys = ['e','e']
+                    hold_time = 0.8  # Tiempo que se mantiene presionada cada tecla (en segundos)
                     delay_between_keys = 0.5  # Tiempo de espera entre soltar una tecla y presionar la siguiente
                     for key in keys:
                         keyboard.press(key)
                         time.sleep(hold_time)
                         keyboard.release(key)
                         time.sleep(delay_between_keys)
+                    bm2WI1 = buscar_imagen_en_pantalla("otros/bm2WI1.png")
+                    bm3WI1 = buscar_imagen_en_pantalla("otros/bm3WI1.png")
+
+                    for bm in [bm3WI1, bm2WI1]:
+                        if bm:
+                            raton_posicion(bm[0], bm[1]+5)
+                            pyautogui.mouseDown(button='right')
+                            time.sleep(1)  # Mantener el botón presionado por 0.2 segundos
+                            pyautogui.mouseUp(button='right')
+                            time.sleep(0.7)
+                            pyautogui.click(button='right') 
+                    if not buscar_imagen_en_pantalla("otros/bm2WI1.png") and not buscar_imagen_en_pantalla("otros/bm3WI1.png"):
+                        raton_posicion(centro_ventana[0]-50, centro_ventana[1]+200)
+                        keyboard.press_and_release(".")
+                        time.sleep(0.9)
+                        keyboard.press_and_release(",")
+                        time.sleep(0.7)
+                        keyboard.press_and_release(".")
+                        time.sleep(0.9)
                         piso10 = buscar_imagen_en_pantalla("acheron/piso10.png")
-                        if piso10:
-                            break
+                        if not piso10:
+                            piso10 = buscar_imagen_en_pantalla("acheron/piso10_1.png")
+                        time.sleep(1)
                 if piso10:
                     raton_posicion(piso10[0], piso10[1])
                     keyboard.press_and_release(".")
@@ -2383,7 +2489,7 @@ def funcionetapa():
                     etapa=23
             if etapa==23 and contadormostruos1>3:
                 atacar = 0
-                keys = ['q','q']
+                keys = ['q']
                 hold_time = 2  # Tiempo que se mantiene presionada cada tecla (en segundos)
                 delay_between_keys = 0.5  # Tiempo de espera entre soltar una tecla y presionar la siguiente
                 for key in keys:
@@ -2515,7 +2621,7 @@ def funcionetapa():
                 etapa=27
             if etapa==27 and contadormostruos1>3:
                 atacar = 0
-                raton_posicion (centro_ventana[0]+250, centro_ventana[1]+10)
+                raton_posicion (centro_ventana[0]+320, centro_ventana[1]-10)
                 keyboard.press_and_release(".")
                 time.sleep(0.9)
                 keyboard.press_and_release(",")
@@ -2606,21 +2712,21 @@ def funcionmercenario():
             else:
                 print("Ni M1 ni M1_K fueron detectados")
 
-        M2 = buscar_imagen_en_pantalla("otros/M2.png")
-        if M2:
-            print("M2 detectado")
-        else:
-            M2_K = buscar_imagen_en_pantalla("otros/M2_K.png")
-            if M2_K:
-                print("M2_K detectado")
-                keyboard.press('ctrl')
-                time.sleep(0.5)
-                keyboard.press('6')
-                time.sleep(0.5)
-                keyboard.release('6')
-                keyboard.release('ctrl')
-            else:
-                print("Ni M2 ni M2_K fueron detectados")
+        # M2 = buscar_imagen_en_pantalla("otros/M2.png")
+        # if M2:
+        #     print("M2 detectado")
+        # else:
+        #     M2_K = buscar_imagen_en_pantalla("otros/M2_K.png")
+        #     if M2_K:
+        #         print("M2_K detectado")
+        #         keyboard.press('ctrl')
+        #         time.sleep(0.5)
+        #         keyboard.press('6')
+        #         time.sleep(0.5)
+        #         keyboard.release('6')
+        #         keyboard.release('ctrl')
+        #     else:
+        #         print("Ni M2 ni M2_K fueron detectados")
 
     print("funcionmercenario terminada")
 
@@ -2688,7 +2794,7 @@ funciones = [
     funcioncaja,
     funcioiniciar,
     funcionterminar,
-    # funcionmercenario,
+    funcionmercenario,
     funcionetapa
     ]
 
