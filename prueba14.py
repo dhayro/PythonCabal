@@ -578,9 +578,14 @@ def vida_estancada(vida_anterior, vida_actual, ciclos_sin_bajar, umbral=1, max_c
     return False
 
 time.sleep(0.5)
+rangodetected = 0
+rango = buscar_imagen_en_pantalla("acheron/rango1.png")
+if rango:
+    raton_posicion(rango[0], rango[1])
+    rangodetected = rango[1]+15
 
 caja_images = [
-    # "otros/caja.png",
+     # "otros/caja.png",
     # "otros/cofre.png",
     # "otros/cofre1.png",
     # "otros/cofre2.png",
@@ -594,7 +599,14 @@ caja_images = [
 for caja_img in caja_images:
     caja = buscar_imagen_en_pantalla(caja_img)
     if caja:
-        raton_posicion(caja[0], caja[1])
+        if caja[1] > rangodetected:
+            raton_posicion(caja[0], caja[1])
+# raton_posicion(centro_ventana[0], centro_ventana[1])
+time.sleep(1.5)
+# raton_posicion(centro_ventana[0]-350, centro_ventana[1]+60)
+# time.sleep(1.5)
+# raton_posicion(centro_ventana[0]+200, centro_ventana[1]+150)
+# time.sleep(1.5)
 # raton_posicion(centro_ventana[0]+100, centro_ventana[1]-150)
 # keyboard.press_and_release(".")
 # time.sleep(0.9)

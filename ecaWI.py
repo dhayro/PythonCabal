@@ -516,7 +516,7 @@ def funcionmostruo():
         if bossok:
             bosdetectado = 1
 
-        if not fail and not dado and dungeon == 1:
+        if not fail and not dado and dungeon == 1 and  (esperandocuenta!=12):
             if vidamostruo:
                 contadormostruos1 = 0
                 puerta = 0
@@ -542,10 +542,16 @@ def funcionmostruo():
     print("funcionmostruo terminada")
 
 def funcionmostruoeca():
-    global stop_flag, imagen_presente_esperando, bosdetectado, lanzabuff, esperandocuenta
+    global stop_flag, imagen_presente_esperando, bosdetectado, lanzabuff, esperandocuenta,rangodetected
 
     bosdetectadovalidar = False
     imagen_presente_esperando = False
+
+    rango = buscar_imagen_en_pantalla("acheron/rango.png")
+    if not rango:
+        rango = buscar_imagen_en_pantalla("acheron/rango1.png")
+    if rango:
+        rangodetected = rango[1]+15
 
     imagenes = {
         'esperando': ["eca/esperando.png", "eca/esperando1.png"],
@@ -569,6 +575,53 @@ def funcionmostruoeca():
             imagen_presente_esperando = True
         elif not esperando and imagen_presente_esperando:
             imagen_presente_esperando = False
+        
+        caja = buscar_imagen_en_pantalla("eca/bos2_1_name.png")
+        if caja:
+            if caja[1] > rangodetected:
+                raton_posicion(caja[0], caja[1] + 10)
+                pyautogui.click(button='left')
+                print(f'detecte eca/bos2_1_name.png en posición Y: {caja[1]} (fuera del rango 165-170)')
+                keyboard.press_and_release("space")
+                keyboard.press_and_release("space")
+            else:
+                print(f'detecte eca/bos2_1_name.png en posición Y: {caja[1]} (dentro del rango 165-170, no se hace clic)')
+
+            # Analizar si hay vida (vidamostruo)
+            if buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                # Esperar hasta que vidamostruo desaparezca
+                while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                    time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga de CPU
+
+        # Buscar y hacer clic en la segunda imagen
+        caja = buscar_imagen_en_pantalla("eca/bos2_2_name.png")
+        if caja:
+            if caja[1] > rangodetected:
+                raton_posicion(caja[0], caja[1] + 10)
+                pyautogui.click(button='left')
+                print(f'detecte eca/bos2_2_name.png en posición Y: {caja[1]} (fuera del rango 165-170)')
+                keyboard.press_and_release("space")
+                keyboard.press_and_release("space")
+            else:
+                print(f'detecte eca/bos2_2_name.png en posición Y: {caja[1]} (dentro del rango 165-170, no se hace clic)')
+
+            # Analizar nuevamente si hay vida (vidamostruo)
+            if buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                # Esperar hasta que vidamostruo desaparezca
+                while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                    time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga de CPU
+
+        # Buscar y hacer clic en la tercera imagen
+        caja = buscar_imagen_en_pantalla("eca/bos2_3_name.png")
+        if caja and not (buscar_imagen_en_pantalla("eca/bos2_1_name.png") or buscar_imagen_en_pantalla("eca/bos2_2_name.png")):
+            if caja[1] > rangodetected:
+                raton_posicion(caja[0], caja[1] + 10)
+                pyautogui.click(button='left')
+                print(f'detecte eca/bos2_3_name.png en posición Y: {caja[1]} (fuera del rango 165-170)')
+                keyboard.press_and_release("space")
+                keyboard.press_and_release("space")
+            else:
+                print(f'detecte eca/bos2_3_name.png en posición Y: {caja[1]} (dentro del rango 165-170, no se hace clic)')
 
         # Buscar y procesar imágenes de jefes y cajas
         for nombre, ruta in imagenes.items():
@@ -649,12 +702,12 @@ def funcionBM():
             else:
                 contarboss = 0
 
-            if bm3WI and vidamostruo  and (esperandocuenta in [8]) and bossok and not (bm3WI1 or bm2WI1): #, 12, 16, 20
+            if bm3WI and vidamostruo  and (esperandocuenta in [8,12]) and bossok and not (bm3WI1 or bm2WI1): #, 12, 16, 20
                 keyboard.press_and_release("f12")
                 time.sleep(0.5)
                 keyboard.press_and_release("f12")
 
-            if bm3WI and vidamostruo and (wavecuenta in [5,9]) and not (bm3WI1 or bm2WI1): #5
+            if bm3WI and vidamostruo and (wavecuenta in [5,9,14]) and not (bm3WI1 or bm2WI1): #5
                 keyboard.press_and_release("f12")
                 time.sleep(0.5)
                 keyboard.press_and_release("f12")
@@ -673,7 +726,7 @@ def funcionBM():
 
             waiteca = buscar_imagen_en_pantalla("eca/esperando.png")
 
-            if esperandocuenta in [2,14,15,16,17,18,19,20,21,22] and waiteca and central==0:
+            if esperandocuenta in [2,17,18,19,20,21,22] and waiteca and central==0: #14,15,16
                 centro_ventanabm3 = obtener_centro_ventana(nombre_proceso)
                 print(f"El centro de la ventanabm3 de {nombre_proceso} es ({centro_ventanabm3[0]}, {centro_ventanabm3[1]}).")
 
@@ -719,18 +772,18 @@ def funcionBM():
                 #     keyboard.press_and_release("f10")
                 #     time.sleep(1.5)
 
-            # if esperandocuenta in [4, 8, 12, 16, 20] and not bossok:
-            #     bm3WI1 = buscar_imagen_en_pantalla("otros/bm3WI1.png")
-            #     if bm3WI1:
-            #         raton_posicion(bm3WI1[0], bm3WI1[1]+5)
-            #         time.sleep(1)
-            #         pyautogui.click(button='right')
-            #         # Movemos el ratón hacia abajo después de cada clic
-            #         pyautogui.moveRel(0, 2)  # Mueve 15 píxeles hacia abajo
-            #         time.sleep(1)
-            #         pyautogui.click(button='right')
+            if esperandocuenta in [12] and not bossok:
+                bm3WI1 = buscar_imagen_en_pantalla("otros/bm3WI1.png")
+                if bm3WI1:
+                    raton_posicion(bm3WI1[0], bm3WI1[1]+5)
+                    time.sleep(1)
+                    pyautogui.click(button='right')
+                    # Movemos el ratón hacia abajo después de cada clic
+                    pyautogui.moveRel(0, 2)  # Mueve 15 píxeles hacia abajo
+                    time.sleep(1)
+                    pyautogui.click(button='right')
 
-            if bm2WI and not (bm3WI1 or bm2WI1) and esperandocuenta in [8]:#[4] , 12, 16, 20
+            if bm2WI and not (bm3WI1 or bm2WI1) and esperandocuenta in [8,12,16]:#[4] , 12, 16, 20
                 if esperandocuenta <= 16:
                     time.sleep(19)
                 keyboard.press_and_release("f10")
@@ -954,26 +1007,32 @@ def funcionBM_optimizada():
             
             while intentos < max_intentos:
                 intentos += 1
+                keyboard.press_and_release("6")
+                keyboard.press_and_release("space")
+                time.sleep(0.15)  # Reducido de 0.2 a 0.15
                 
-                if not check_imagen("eca/boss.png"):
-                    keyboard.press_and_release("6")
-                    keyboard.press_and_release("space")
-                    time.sleep(0.15)  # Reducido de 0.2 a 0.15
+                if not check_imagen("otros/bm3WI1.png", True):
+                    break
+                
+                # if bosscuenta==3:
+                #     keyboard.press_and_release("6")
+                #     keyboard.press_and_release("space")
+                #     time.sleep(0.15)  # Reducido de 0.2 a 0.15
                     
-                    if not check_imagen("otros/bm3WI1.png", True):
-                        break
-                else:  
-                    ahora = time.time()
-                    for hab in habilidades:
-                        if ahora - hab["ultimo_uso"] >= hab["cooldown"]:
-                            keyboard.press_and_release(hab["tecla"])
-                            print(f"Presionando {hab['tecla']} - Casting {hab['casting']}s")
-                            hab["ultimo_uso"] = ahora
-                            time.sleep(hab["casting"])
-                            keyboard.press_and_release("space")
+                #     if not check_imagen("otros/bm3WI1.png", True):
+                #         break
+                # else:  
+                #     ahora = time.time()
+                #     for hab in habilidades:
+                #         if ahora - hab["ultimo_uso"] >= hab["cooldown"]:
+                #             keyboard.press_and_release(hab["tecla"])
+                #             print(f"Presionando {hab['tecla']} - Casting {hab['casting']}s")
+                #             hab["ultimo_uso"] = ahora
+                #             time.sleep(hab["casting"])
+                #             keyboard.press_and_release("space")
                             
-                            if not check_imagen("otros/bm3WI1.png", True):
-                                break
+                #             if not check_imagen("otros/bm3WI1.png", True):
+                #                 break
                 
                 if not check_imagen("otros/bm3WI1.png", True):
                     break
@@ -1043,7 +1102,7 @@ def funcionfail():
         time.sleep(1)
 
         bos2_1 = buscar_imagen_en_pantalla("eca/bos2_1.png")
-        if bos2_1!=False or esperandocuenta==12:
+        if esperandocuenta==16: #bos2_1!=False or 
             reset_variables()
 
         fail = buscar_imagen_en_pantalla("otros/fail.png")
@@ -1930,6 +1989,7 @@ wavecuenta=0
 bosscuenta=0
 bosdetectado=0
 conteocabal=0
+rangodetected=0
 puerta=0
 central=0
 puertita=0

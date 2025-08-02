@@ -1395,7 +1395,7 @@ def funcioiniciar():
                                                                         if noentrar!= False :
                                                                             print('clic no entrar1')
                                                                             stop_flag = True
-                                                                            # os.system("shutdown /s /t 10")
+                                                                            os.system("shutdown /s /t 10")
                                                                             break
                                                                         else:
                                                                             if entrar!= False :

@@ -960,7 +960,7 @@ def handle_dungeon_selection():
             if noentrar:
                 print('clic no entrar1')
                 stop_flag = True
-                # os.system("shutdown /s /t 10")
+                os.system("shutdown /s /t 10")
                 return
             elif entrar:
                 click_imagen(entrar)
@@ -971,7 +971,7 @@ def handle_dungeon_selection():
             if noentrar:
                 print('clic no entrar1')
                 stop_flag = True
-                # os.system("shutdown /s /t 10")
+                os.system("shutdown /s /t 10")
                 return
 
 

@@ -490,7 +490,7 @@ def imagenmostruo():
 
         return percentage
 def funcioncaja():  
-    global stop_flag, contadormostruos1, bosfinal, dungeon, puerta, terminar, bosdetectado
+    global stop_flag, contadormostruos1, bosfinal, dungeon, puerta, terminar, bosdetectado,rangodetected
     global terminando, lanzabuff, puertita, vidamostruo, fail, atacar
 
     while not stop_flag and not keyboard.is_pressed('delete'):
@@ -510,6 +510,12 @@ def funcioncaja():
             atacar = 0
             time.sleep(2)
             atacar = 1
+        
+        rango = buscar_imagen_en_pantalla("acheron/rango.png")
+        if not rango:
+            rango = buscar_imagen_en_pantalla("acheron/rango1.png")
+        if rango:
+            rangodetected = rango[1]+15
 
         caja_images = [
             # "otros/caja.png",
@@ -527,7 +533,7 @@ def funcioncaja():
             caja = buscar_imagen_en_pantalla(caja_img)
             if caja:
                 # Verificar si la posición Y está fuera del rango 165-170
-                if caja[1] < 150 or caja[1] > 170:
+                if caja[1] > rangodetected:
                     raton_posicion(caja[0], caja[1]+10)
                     pyautogui.click(button='left')
                     print(f'detecte {caja_img} en posición Y: {caja[1]} (fuera del rango 165-170)')
@@ -562,6 +568,11 @@ def funcionmostruo():
 
         if etapa==27 and (bos_detected or caja_detected):
             etapa=28
+            
+        if buscar_imagen_en_pantalla("acheron/bos1.png") or buscar_imagen_en_pantalla("acheron/bos1_name.png"):
+            print("Bos1 detected, handling separately")
+            # Add any specific logic for "bos2" here if needed
+            etapa=23
 
         # Check specifically for "acheron/bos2.png"
         if buscar_imagen_en_pantalla("acheron/bos2.png") or buscar_imagen_en_pantalla("acheron/bos2_1.png"):
@@ -1268,7 +1279,7 @@ def handle_dungeon_selection():
             if noentrar:
                 print('clic no entrar1')
                 stop_flag = True
-                # os.system("shutdown /s /t 10")
+                os.system("shutdown /s /t 10")
                 return
             elif entrar:
                 click_imagen(entrar)
@@ -1279,7 +1290,7 @@ def handle_dungeon_selection():
             if noentrar:
                 print('clic no entrar1')
                 stop_flag = True
-                # os.system("shutdown /s /t 10")
+                os.system("shutdown /s /t 10")
                 return
         time.sleep(1)
 
@@ -1857,7 +1868,7 @@ def funcionetapa():
                         pasos_completados = 0
                         
                         # Ciclo principal de búsqueda
-                        while direccion_busqueda < 3 and not buscar_imagen_en_pantalla("otros/mostrous.jpg") and contadormostruos1>2:
+                        while direccion_busqueda < 5 and not buscar_imagen_en_pantalla("otros/mostrous.jpg") and contadormostruos1>2:
                             print("Iniciando ciclo kong")
                             if direccion_busqueda == 0:  # Búsqueda hacia atrás
                                 print("Iniciando ciclo kongv1")
@@ -1918,12 +1929,11 @@ def funcionetapa():
                                     # Completó los 2 pasos hacia atrás, cambiar dirección
                                     direccion_busqueda = 1
                                     pasos_completados = 0
-                            
                             elif direccion_busqueda == 1:  # Búsqueda hacia adelante
                                 print("Iniciando ciclo kongv2")
-                                if pasos_completados < 4:
-                                    raton_posicion(centro_ventana[0]+100, centro_ventana[1]-150)
-                                    keyboard.press_and_release(",")
+                                if pasos_completados < 1:
+                                    raton_posicion(centro_ventana[0]-350, centro_ventana[1]+60)
+                                    keyboard.press_and_release(".")
                                     time.sleep(1)
                                     keyboard.press_and_release("z")
                                     time.sleep(0.5)
@@ -1977,11 +1987,129 @@ def funcionetapa():
                                     # Completó los 4 pasos hacia adelante, cambiar dirección
                                     direccion_busqueda = 2
                                     pasos_completados = 0
+
+                            elif direccion_busqueda == 2:  # Búsqueda hacia adelante
+                                print("Iniciando ciclo kongv2")
+                                if pasos_completados < 1:
+                                    raton_posicion(centro_ventana[0]+350, centro_ventana[1]+150)
+                                    keyboard.press_and_release(".")
+                                    time.sleep(1)
+                                    keyboard.press_and_release("z")
+                                    time.sleep(0.5)
+                                    pasos_completados += 1
+                                    
+                                    # Si encuentra monstruos, esperar a que los mate
+                                    if buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                                        print("Monstruo encontrado hacia adelante, esperando a que sea eliminado")
+                                        tiempo_inicio_combate = time.time()
+                                        vida_anterior = None
+                                        ciclos_sin_bajar = 0
+                                        
+                                        while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                                                print("Iniciando ciclo kong2")
+                                            # Verificar si la vida del monstruo está bajando
+                                            # if 'moustruovida' in globals():
+                                                vida_actual = imagenmostruo()
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
+                                                if vida_anterior is None:
+                                                    vida_anterior = vida_actual
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
+                                                else:
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
+                                        direccion_busqueda = 3
+                                        pasos_completados = 0
+                                else:
+                                    # Completó los 4 pasos hacia adelante, cambiar dirección
+                                    direccion_busqueda = 3
+                                    pasos_completados = 0
                             
-                            elif direccion_busqueda == 2:  # Regreso a posición original
+                            elif direccion_busqueda == 3:  # Búsqueda hacia adelante
+                                print("Iniciando ciclo kongv2")
+                                if pasos_completados < 4:
+                                    raton_posicion(centro_ventana[0]+300, centro_ventana[1]-150)
+                                    keyboard.press_and_release(",")
+                                    time.sleep(1)
+                                    keyboard.press_and_release("z")
+                                    time.sleep(0.5)
+                                    pasos_completados += 1
+                                    
+                                    # Si encuentra monstruos, esperar a que los mate
+                                    if buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                                        print("Monstruo encontrado hacia adelante, esperando a que sea eliminado")
+                                        tiempo_inicio_combate = time.time()
+                                        vida_anterior = None
+                                        ciclos_sin_bajar = 0
+                                        
+                                        while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                                                print("Iniciando ciclo kong2")
+                                            # Verificar si la vida del monstruo está bajando
+                                            # if 'moustruovida' in globals():
+                                                vida_actual = imagenmostruo()
+                                                print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+
+                                                if vida_anterior is None:
+                                                    vida_anterior = vida_actual
+                                                    ciclos_sin_bajar = 0
+                                                    print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                                                    contadormostruos1  = 3
+                                                else:
+                                                    if vida_actual < vida_anterior - 1:
+                                                        print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                                        vida_anterior = vida_actual
+                                                        ciclos_sin_bajar = 0
+                                                        keyboard.press_and_release("esc")
+                                                        keyboard.press_and_release("esc")
+                                                        contadormostruos1  = 3
+                                                    else:
+                                                        ciclos_sin_bajar += 1
+                                                        print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                                        if ciclos_sin_bajar >= 8:
+                                                            print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                                            pasos_completados=5
+                                                            keyboard.press_and_release("esc")
+                                                            keyboard.press_and_release("esc")
+                                                            atacar = 0
+                                                            time.sleep(1)
+                                                            keyboard.press_and_release("esc")
+                                                            contadormostruos1  = 3
+                                                            break
+
+                                                time.sleep(0.5)  # Ajusta el tiempo según tu necesidad
+                                        direccion_busqueda = 4
+                                        pasos_completados = 0
+                                else:
+                                    # Completó los 4 pasos hacia adelante, cambiar dirección
+                                    direccion_busqueda = 4
+                                    pasos_completados = 0
+                            
+                            elif direccion_busqueda == 4:  # Regreso a posición original
                                 print("Iniciando ciclo kongv3")
                                 if pasos_completados < 2:
-                                    raton_posicion(centro_ventana[0]-100, centro_ventana[1]+150)
+                                    raton_posicion(centro_ventana[0]-300, centro_ventana[1]+150)
                                     keyboard.press_and_release(",")
                                     time.sleep(1)
                                     pasos_completados += 1
@@ -2033,7 +2161,7 @@ def funcionetapa():
                                         contadormostruos1 = 4
                                         etapa=15
                                         entre=0
-                                        direccion_busqueda = 3
+                                        direccion_busqueda = 5
                                             # Si el combate dura demasiado, continuar
                                             # if time.time() - tiempo_inicio_combate > 15:
                                             #     print("Combate demasiado largo, continuando camino")
@@ -2046,7 +2174,7 @@ def funcionetapa():
                                         contadormostruos1 = 4
                                         etapa=15
                                         entre=0
-                                        direccion_busqueda = 3
+                                        direccion_busqueda = 5
 
 
             if etapa==15 and contadormostruos1>3:
@@ -2680,6 +2808,17 @@ def funcionetapa():
                 contadormostruos1=0
                 atacar = 1
                 etapa=29
+            if etapa==29 and contadormostruos1>10:
+                if not buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                    keys = ['s']
+                    hold_time = 0.5  # Tiempo que se mantiene presionada cada tecla (en segundos)
+                    delay_between_keys = 0.5  # Tiempo de espera entre soltar una tecla y presionar la siguiente
+                    for key in keys:
+                        keyboard.press(key)
+                        time.sleep(hold_time)
+                        keyboard.release(key)
+                        time.sleep(delay_between_keys)
+                    keyboard.press_and_release("z")
 
 
             
@@ -2752,7 +2891,6 @@ murodetectado=False
 puertita=0
 muriendo=0
 terminando=0
-bos1_namedetectado=0
 cuenta=0
 pase=0
 contarwave=0
@@ -2773,6 +2911,7 @@ lanzabuff=0
 bosfinal=False
 fail = False
 entre=0
+rangodetected=0
 bosfinal1=0
 atacar=0
 nombre_proceso = "cabal"
