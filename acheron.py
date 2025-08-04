@@ -1991,7 +1991,7 @@ def funcionetapa():
                             elif direccion_busqueda == 2:  # Búsqueda hacia adelante
                                 print("Iniciando ciclo kongv2")
                                 if pasos_completados < 1:
-                                    raton_posicion(centro_ventana[0]+350, centro_ventana[1]+150)
+                                    raton_posicion(centro_ventana[0]+380, centro_ventana[1]+100)
                                     keyboard.press_and_release(".")
                                     time.sleep(1)
                                     keyboard.press_and_release("z")
@@ -2050,7 +2050,7 @@ def funcionetapa():
                             elif direccion_busqueda == 3:  # Búsqueda hacia adelante
                                 print("Iniciando ciclo kongv2")
                                 if pasos_completados < 4:
-                                    raton_posicion(centro_ventana[0]+300, centro_ventana[1]-150)
+                                    raton_posicion(centro_ventana[0]+300, centro_ventana[1]-280)
                                     keyboard.press_and_release(",")
                                     time.sleep(1)
                                     keyboard.press_and_release("z")
