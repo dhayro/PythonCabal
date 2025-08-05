@@ -619,7 +619,7 @@ def funcionmostruo():
                     caja_detected = False
 
                 while not caja_detected:
-                    atacar=0
+                    
                     keyboard.press_and_release("z")
                     if buscar_imagen_en_pantalla("acheron/caja.png"):
                         contadormostruos1 = 0
@@ -629,8 +629,9 @@ def funcionmostruo():
                         bos2_detected = False
                     else:
                         contadormostruos1 += 1
-                        if contadormostruos1 >= 10:
-                            
+                        if contadormostruos1 >= 4:
+                            # atacar=0
+                            contadormostruos1 = 4
                             break
                     
             # else:
@@ -706,7 +707,9 @@ def funcionBM():
             keyboard.press_and_release("f12")
 
         
-        if etapa >27 and bm2WI and vidamostruo  and not (bm3WI1 or bm2WI1):
+        if etapa >27 and bm2WI and buscar_imagen_en_pantalla("otros/mostrous.jpg")  and not (bm3WI1 or bm2WI1):
+            keyboard.press_and_release("F10")
+            time.sleep(0.5)
             keyboard.press_and_release("F10")
 
         # if bm2WI and vidamostruo  and not (bm3WI1 or bm2WI1):
@@ -1991,7 +1994,7 @@ def funcionetapa():
                             elif direccion_busqueda == 2:  # Búsqueda hacia adelante
                                 print("Iniciando ciclo kongv2")
                                 if pasos_completados < 1:
-                                    raton_posicion(centro_ventana[0]+380, centro_ventana[1]+100)
+                                    raton_posicion(centro_ventana[0]+380, centro_ventana[1]+120)
                                     keyboard.press_and_release(".")
                                     time.sleep(1)
                                     keyboard.press_and_release("z")
@@ -2050,7 +2053,7 @@ def funcionetapa():
                             elif direccion_busqueda == 3:  # Búsqueda hacia adelante
                                 print("Iniciando ciclo kongv2")
                                 if pasos_completados < 4:
-                                    raton_posicion(centro_ventana[0]+300, centro_ventana[1]-280)
+                                    raton_posicion(centro_ventana[0]+300, centro_ventana[1]-250)
                                     keyboard.press_and_release(",")
                                     time.sleep(1)
                                     keyboard.press_and_release("z")
@@ -2613,8 +2616,20 @@ def funcionetapa():
                     keyboard.press_and_release(".")
                     time.sleep(0.9)
                     contadormostruos1=0
-                    atacar = 1
-                    etapa=23
+                    while True:
+                        keyboard.press_and_release("z")
+                        time.sleep(0.1)
+                        rango1 = buscar_imagen_en_pantalla("acheron/Rango1.png")
+                        rangobos = buscar_imagen_en_pantalla("acheron/rangobos.png")
+                        
+                        # Si encuentra alguna de las imágenes de rango, salir del bucle
+                        if rango1 or rangobos:
+                            atacar = 1
+                            etapa = 23
+                            print("Rango detectado, atacar=1 y etapa=23")
+                            break
+                        
+                        
             if etapa==23 and contadormostruos1>3:
                 atacar = 0
                 keys = ['q']
