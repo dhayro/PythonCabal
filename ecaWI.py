@@ -576,52 +576,133 @@ def funcionmostruoeca():
         elif not esperando and imagen_presente_esperando:
             imagen_presente_esperando = False
         
-        caja = buscar_imagen_en_pantalla("eca/bos2_1_name.png")
-        if caja:
-            if caja[1] > rangodetected:
-                raton_posicion(caja[0], caja[1] + 10)
+        bos2_1_name = buscar_imagen_en_pantalla("eca/bos2_1_name.png")
+        if bos2_1_name and not (buscar_imagen_en_pantalla("eca/bos2_3_name.png") or buscar_imagen_en_pantalla("eca/bos2_2_name.png")):
+            if bos2_1_name[1] > rangodetected:
+                raton_posicion(bos2_1_name[0], bos2_1_name[1] + 10)
                 pyautogui.click(button='left')
-                print(f'detecte eca/bos2_1_name.png en posición Y: {caja[1]} (fuera del rango 165-170)')
+                print(f'detecte eca/bos2_1_name.png en posición Y: {bos2_1_name[1]} (fuera del rango 165-170)')
                 keyboard.press_and_release("space")
                 keyboard.press_and_release("space")
             else:
-                print(f'detecte eca/bos2_1_name.png en posición Y: {caja[1]} (dentro del rango 165-170, no se hace clic)')
+                print(f'detecte eca/bos2_1_name.png en posición Y: {bos2_1_name[1]} (dentro del rango 165-170, no se hace clic)')
 
             # Analizar si hay vida (vidamostruo)
             if buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                 # Esperar hasta que vidamostruo desaparezca
+                vida_anterior = None
+                ciclos_sin_bajar = 0
+                
                 while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
-                    time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga de CPU
+                        print("Iniciando ciclo kong3")
+
+                        vida_actual = imagenmostruo()
+                        print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+                        if vida_anterior is None:
+                            vida_anterior = vida_actual
+                            ciclos_sin_bajar = 0
+                            print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                        else:
+                            if vida_actual < vida_anterior - 1:
+                                print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                vida_anterior = vida_actual
+                                ciclos_sin_bajar = 0
+                                while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                                    print("Esperando a que la vida desaparezca...")
+                                    time.sleep(0.1)
+                            else:
+                                ciclos_sin_bajar += 1
+                                print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                if ciclos_sin_bajar >= 3:
+                                    print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                    keyboard.press_and_release("z")
+                                    
+
 
         # Buscar y hacer clic en la segunda imagen
-        caja = buscar_imagen_en_pantalla("eca/bos2_2_name.png")
-        if caja:
-            if caja[1] > rangodetected:
-                raton_posicion(caja[0], caja[1] + 10)
+        bos2_2_name = buscar_imagen_en_pantalla("eca/bos2_2_name.png")
+        if bos2_2_name and not (buscar_imagen_en_pantalla("eca/bos2_1_name.png") or buscar_imagen_en_pantalla("eca/bos2_3_name.png")):
+            if bos2_2_name[1] > rangodetected:
+                raton_posicion(bos2_2_name[0], bos2_2_name[1] + 10)
                 pyautogui.click(button='left')
-                print(f'detecte eca/bos2_2_name.png en posición Y: {caja[1]} (fuera del rango 165-170)')
+                print(f'detecte eca/bos2_2_name.png en posición Y: {bos2_2_name[1]} (fuera del rango 165-170)')
                 keyboard.press_and_release("space")
                 keyboard.press_and_release("space")
             else:
-                print(f'detecte eca/bos2_2_name.png en posición Y: {caja[1]} (dentro del rango 165-170, no se hace clic)')
+                print(f'detecte eca/bos2_2_name.png en posición Y: {bos2_2_name[1]} (dentro del rango 165-170, no se hace clic)')
 
             # Analizar nuevamente si hay vida (vidamostruo)
             if buscar_imagen_en_pantalla("otros/mostrous.jpg"):
                 # Esperar hasta que vidamostruo desaparezca
+                vida_anterior = None
+                ciclos_sin_bajar = 0
+                
                 while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
-                    time.sleep(0.1)  # Pequeña pausa para evitar sobrecarga de CPU
+                        print("Iniciando ciclo kong3")
+
+                        vida_actual = imagenmostruo()
+                        print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+                        if vida_anterior is None:
+                            vida_anterior = vida_actual
+                            ciclos_sin_bajar = 0
+                            print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                        else:
+                            if vida_actual < vida_anterior - 1:
+                                print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                vida_anterior = vida_actual
+                                ciclos_sin_bajar = 0
+                                while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                                    print("Esperando a que la vida desaparezca...")
+                                    time.sleep(0.1)
+                            else:
+                                ciclos_sin_bajar += 1
+                                print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                if ciclos_sin_bajar >= 3:
+                                    print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                    keyboard.press_and_release("z")
+                                    
 
         # Buscar y hacer clic en la tercera imagen
-        caja = buscar_imagen_en_pantalla("eca/bos2_3_name.png")
-        if caja and not (buscar_imagen_en_pantalla("eca/bos2_1_name.png") or buscar_imagen_en_pantalla("eca/bos2_2_name.png")):
-            if caja[1] > rangodetected:
-                raton_posicion(caja[0], caja[1] + 10)
+        bos2_3_name = buscar_imagen_en_pantalla("eca/bos2_3_name.png")
+        if bos2_3_name and not (buscar_imagen_en_pantalla("eca/bos2_1_name.png") or buscar_imagen_en_pantalla("eca/bos2_2_name.png")):
+            if bos2_3_name[1] > rangodetected:
+                raton_posicion(bos2_3_name[0], bos2_3_name[1] + 10)
                 pyautogui.click(button='left')
-                print(f'detecte eca/bos2_3_name.png en posición Y: {caja[1]} (fuera del rango 165-170)')
+                print(f'detecte eca/bos2_3_name.png en posición Y: {bos2_3_name[1]} (fuera del rango 165-170)')
                 keyboard.press_and_release("space")
                 keyboard.press_and_release("space")
             else:
-                print(f'detecte eca/bos2_3_name.png en posición Y: {caja[1]} (dentro del rango 165-170, no se hace clic)')
+                print(f'detecte eca/bos2_3_name.png en posición Y: {bos2_3_name[1]} (dentro del rango 165-170, no se hace clic)')
+
+            if buscar_imagen_en_pantalla("otros/mostrous.jpg"): 
+                # Esperar hasta que vidamostruo desaparezca
+                vida_anterior = None
+                ciclos_sin_bajar = 0
+                
+                while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                        print("Iniciando ciclo kong3")
+
+                        vida_actual = imagenmostruo()
+                        print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+                        if vida_anterior is None:
+                            vida_anterior = vida_actual
+                            ciclos_sin_bajar = 0
+                            print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+                        else:
+                            if vida_actual < vida_anterior - 1:
+                                print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+                                vida_anterior = vida_actual
+                                ciclos_sin_bajar = 0
+                                while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                                    print("Esperando a que la vida desaparezca...")
+                                    time.sleep(0.1)
+                            else:
+                                ciclos_sin_bajar += 1
+                                print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+                                if ciclos_sin_bajar >= 3:
+                                    print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                                    keyboard.press_and_release("z")
+                                    
 
         # Buscar y procesar imágenes de jefes y cajas
         for nombre, ruta in imagenes.items():
@@ -707,7 +788,7 @@ def funcionBM():
                 time.sleep(0.5)
                 keyboard.press_and_release("f12")
 
-            if bm3WI and vidamostruo and (wavecuenta in [5,9,14]) and not (bm3WI1 or bm2WI1): #5
+            if bm3WI and vidamostruo and (wavecuenta in [5,9,14,15]) and not (bm3WI1 or bm2WI1): #5
                 keyboard.press_and_release("f12")
                 time.sleep(0.5)
                 keyboard.press_and_release("f12")
@@ -1730,7 +1811,7 @@ def handle_dungeon_selection():
                 print('clic no entrar1')
                 global stop_flag
                 stop_flag = True
-                # os.system("shutdown /s /t 10")
+                os.system("shutdown /s /t 10")
                 return
             elif entrar:
                 click_imagen(entrar)

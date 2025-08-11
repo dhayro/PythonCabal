@@ -578,29 +578,55 @@ def vida_estancada(vida_anterior, vida_actual, ciclos_sin_bajar, umbral=1, max_c
     return False
 
 time.sleep(0.5)
-rangodetected = 0
-rango = buscar_imagen_en_pantalla("acheron/rango1.png")
-if rango:
-    raton_posicion(rango[0], rango[1])
-    rangodetected = rango[1]+15
+# rangodetected = 0
+# rango = buscar_imagen_en_pantalla("acheron/rango1.png")
+# if rango:
+#     raton_posicion(rango[0], rango[1])
+#     rangodetected = rango[1]+15
 
-caja_images = [
-     # "otros/caja.png",
-    # "otros/cofre.png",
-    # "otros/cofre1.png",
-    # "otros/cofre2.png",
-    "otros/caja1.png",
-    "acheron/rojo2.png",
-    "acheron/rojo1.png",
-    "acheron/master1.png",
-    "acheron/bos1_name.png",
-    "acheron/bos3_name.png",
-]
-for caja_img in caja_images:
-    caja = buscar_imagen_en_pantalla(caja_img)
-    if caja:
-        if caja[1] > rangodetected:
-            raton_posicion(caja[0], caja[1])
+# caja_images = [
+#      # "otros/caja.png",
+#     # "otros/cofre.png",
+#     # "otros/cofre1.png",
+#     # "otros/cofre2.png",
+#     "otros/caja1.png",
+#     "acheron/rojo2.png",
+#     "acheron/rojo1.png",
+#     "acheron/master1.png",
+#     "acheron/bos1_name.png",
+#     "acheron/bos3_name.png",
+# ]
+# for caja_img in caja_images:
+#     caja = buscar_imagen_en_pantalla(caja_img)
+#     if caja:
+#         if caja[1] > rangodetected:
+#             raton_posicion(caja[0], caja[1])
+vida_anterior = None
+ciclos_sin_bajar = 0
+while buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+    print("Iniciando ciclo kong3")
+
+    vida_actual = imagenmostruo()
+    print(f"[DEBUG] vida_actual detectada: {vida_actual}")
+    if vida_anterior is None:
+        vida_anterior = vida_actual
+        ciclos_sin_bajar = 0
+        print(f"[DEBUG] Inicializando vida_anterior: {vida_anterior}")
+    else:
+        if vida_actual < vida_anterior - 1:
+            print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
+            vida_anterior = vida_actual
+            ciclos_sin_bajar = 0
+        else:
+            ciclos_sin_bajar += 1
+            print(f"[DEBUG] La vida no bajó, ciclos_sin_bajar: {ciclos_sin_bajar}")
+            if ciclos_sin_bajar >= 3 and ciclos_sin_bajar < 10:
+                print("CAMBIANDO a la vida estancada...")
+                keyboard.press_and_release("z")
+                time.sleep(1)
+            if ciclos_sin_bajar >= 10:
+                print("[DEBUG] La vida no bajó en 3 ciclos, saliendo del bucle.")
+                break
 # raton_posicion(centro_ventana[0], centro_ventana[1])
 time.sleep(1.5)
 # raton_posicion(centro_ventana[0]-350, centro_ventana[1]+60)
