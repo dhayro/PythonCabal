@@ -566,8 +566,7 @@ def funcionmostruo():
             time.sleep(0.5)
             continue
 
-        if etapa==27 and (bos_detected or caja_detected):
-            etapa=28
+        
             
         if buscar_imagen_en_pantalla("acheron/bos1.png") or buscar_imagen_en_pantalla("acheron/bos1_name.png"):
             print("Bos1 detected, handling separately")
@@ -575,7 +574,7 @@ def funcionmostruo():
             etapa=23
 
         # Check specifically for "acheron/bos2.png"
-        if buscar_imagen_en_pantalla("acheron/bos2.png") or buscar_imagen_en_pantalla("acheron/bos2_1.png"):
+        if buscar_imagen_en_pantalla("acheron/bos2.png") or buscar_imagen_en_pantalla("acheron/bos2_1.png") or buscar_imagen_en_pantalla("acheron/rango1.png"):
             print("Bos2 detected, handling separately")
             # Add any specific logic for "bos2" here if needed
             bos2_detected = True
@@ -583,7 +582,7 @@ def funcionmostruo():
             caja_detected = False
 
         # Check for other specific images
-        bos_images = ["acheron/bos1.png",  "acheron/bos3.png",  "acheron/bosfinal.png"]
+        bos_images = ["acheron/bos1.png",  "acheron/bos3.png",  "acheron/bosfinal.png",  "acheron/rangobos.png"]
         for image in bos_images:
             if buscar_imagen_en_pantalla(image):
                 bos_detected = True
@@ -612,37 +611,37 @@ def funcionmostruo():
         if caja_detected and not (bos_detected or bos2_detected):
             mensaje = "Caja detected, stopping 'z' press"
             time.sleep(0.5)
-            if not buscar_imagen_en_pantalla("otros/mostrous.jpg"):
-                contadormostruos1 += 1
-                
-                if contadormostruos1 >= 2 and not buscar_imagen_en_pantalla("acheron/caja.png"):
-                    caja_detected = False
+            if etapa>28:
+                keyboard.press_and_release("z")
+                atacar=1
+            else:
+                if not buscar_imagen_en_pantalla("otros/mostrous.jpg"):
+                    contadormostruos1 += 1
+                    
+                    if contadormostruos1 >= 2 and not buscar_imagen_en_pantalla("acheron/caja.png"):
+                        caja_detected = False
 
-                while not caja_detected:
-                    
-                    keyboard.press_and_release("z")
-                    if buscar_imagen_en_pantalla("acheron/caja.png"):
-                        contadormostruos1 = 0
-                        atacar=1
-                        caja_detected = True
-                        bos_detected = False
-                        bos2_detected = False
-                    else:
-                        contadormostruos1 += 1
-                        if contadormostruos1 >= 4:
-                            # atacar=0
-                            contadormostruos1 = 4
-                            break
-                    
-            # else:
-            #     while not caja_detected:
-            #         if  buscar_imagen_en_pantalla("otros/mostrous.jpg"):
-            #             keyboard.press_and_release("z")
-            #             if buscar_imagen_en_pantalla("acheron/caja.png"):
-            #                 atacar=1
-            #-                 caja_detected = True
-            #         else:
-            #             contadormostruos1 += 1
+                    while not caja_detected:
+                        
+                        keyboard.press_and_release("z")
+                        if buscar_imagen_en_pantalla("acheron/caja.png"):
+                            contadormostruos1 = 0
+                            atacar=1
+                            caja_detected = True
+                            bos_detected = False
+                            bos2_detected = False
+                        else:
+                            contadormostruos1 += 1
+                            if contadormostruos1 >= 4:
+                                # atacar=0
+                                contadormostruos1 = 4
+                                break
+                        
+
+
+        if etapa==27 and (bos_detected or caja_detected):
+            etapa=28
+            
         if bos2_detected and not (bos_detected or caja_detected) :
             mensaje = "Bos2 detected, stopping 'z' press"
             time.sleep(0.5)
@@ -1459,6 +1458,8 @@ def funcionetapa():
                         keyboard.press_and_release("space")
                         time.sleep(0.3)
                 else:
+                    if  buscar_imagen_en_pantalla("acheron/npc.png"):
+                        continue
                     raton_posicion(last_known_position3[0], last_known_position3[1]+300)
                     keyboard.press_and_release(".")
                     time.sleep(0.9)
@@ -1541,6 +1542,8 @@ def funcionetapa():
                         keyboard.press_and_release("space")
                         time.sleep(0.3)
                 else:
+                    if  buscar_imagen_en_pantalla("acheron/npc.png"):
+                        continue
                     if entre==0:
                         raton_posicion(last_known_position5[0]+15, last_known_position5[1]+300)
                         keyboard.press_and_release(".")
@@ -1601,8 +1604,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -1613,7 +1616,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             break
@@ -1661,8 +1664,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -1673,7 +1676,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             break
@@ -1717,8 +1720,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -1729,7 +1732,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             etapa=11
@@ -1846,6 +1849,8 @@ def funcionetapa():
                         keyboard.press_and_release("space")
                         time.sleep(0.3)
                 else:
+                    if  buscar_imagen_en_pantalla("acheron/npc.png"):
+                        continue
                     if entre==0:
                         # raton_posicion(centro_ventana[0]+200, centro_ventana[1]+55)
                         raton_posicion(centro_ventana[0]+180, centro_ventana[1]+125)
@@ -1907,8 +1912,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -1919,7 +1924,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             break
@@ -1966,8 +1971,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -1978,7 +1983,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             break
@@ -2025,8 +2030,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -2037,7 +2042,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             break
@@ -2084,8 +2089,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -2096,7 +2101,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             break
@@ -2140,8 +2145,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -2152,7 +2157,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             etapa=15
@@ -2287,6 +2292,8 @@ def funcionetapa():
                         keyboard.press_and_release("space")
                         time.sleep(0.3)
                 else:
+                    if  buscar_imagen_en_pantalla("acheron/npc.png"):
+                        continue
                     if entre==0:
                         raton_posicion(centro_ventana[0]+300, centro_ventana[1]-15)
                         keyboard.press_and_release(".")
@@ -2347,8 +2354,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -2359,7 +2366,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             break
@@ -2407,8 +2414,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -2419,7 +2426,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             break
@@ -2463,8 +2470,8 @@ def funcionetapa():
                                                         print(f"[DEBUG] La vida bajó de {vida_anterior} a {vida_actual}, reiniciando ciclos_sin_bajar.")
                                                         vida_anterior = vida_actual
                                                         ciclos_sin_bajar = 0
-                                                        keyboard.press_and_release("esc")
-                                                        keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
+                                                        # keyboard.press_and_release("esc")
                                                         contadormostruos1  = 3
                                                     else:
                                                         ciclos_sin_bajar += 1
@@ -2475,7 +2482,7 @@ def funcionetapa():
                                                             keyboard.press_and_release("esc")
                                                             keyboard.press_and_release("esc")
                                                             atacar = 0
-                                                            time.sleep(1)
+                                                            time.sleep(0.8)
                                                             keyboard.press_and_release("esc")
                                                             contadormostruos1  = 3
                                                             etapa=19
@@ -2612,6 +2619,8 @@ def funcionetapa():
                         keyboard.press_and_release("space")
                         time.sleep(0.3)
                 else:
+                    if  buscar_imagen_en_pantalla("acheron/npc.png"):
+                        continue
                     raton_posicion (centro_ventana[0]+17, centro_ventana[1]-230)
                     keyboard.press_and_release(".")
                     time.sleep(0.9)
