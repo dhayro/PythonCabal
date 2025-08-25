@@ -783,12 +783,12 @@ def funcionBM():
             else:
                 contarboss = 0
 
-            if bm3WI and vidamostruo  and (esperandocuenta in [8,12]) and bossok and not (bm3WI1 or bm2WI1): #, 12, 16, 20
+            if bm3WI   and (esperandocuenta in [8,12]) and bossok and not (bm3WI1 or bm2WI1): #, 12, 16, 20
                 keyboard.press_and_release("f12")
                 time.sleep(0.5)
                 keyboard.press_and_release("f12")
 
-            if bm3WI and vidamostruo and (wavecuenta in [5,9,14,15]) and not (bm3WI1 or bm2WI1): #5
+            if bm3WI  and (wavecuenta in [5,9,14,15]) and not (bm3WI1 or bm2WI1): #5
                 keyboard.press_and_release("f12")
                 time.sleep(0.5)
                 keyboard.press_and_release("f12")

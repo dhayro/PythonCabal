@@ -14,12 +14,12 @@ import logging
 
 import tkinter as tk
 from tkinter import ttk
-contardg=contadormostruos1= atacar= etapa=contardgok=moustruovida=vida_actual=vida_anterior=vida=0
+contardg=contadormostruos1= atacar= etapa=contardgok=moustruovida=vida_actual=vida_anterior=vida=direccion_busqueda=0
 piso=mensaje=""
 bos_detected = False
 
 def crear_ventana_info():
-    global  contardg, atacar, etapa,contardgok, piso,contadormostruos1,vida,bos_detected,mensaje,moustruovida,vida_actual,vida_anterior
+    global  contardg, atacar, etapa,contardgok, piso,contadormostruos1,vida,bos_detected,mensaje,moustruovida,vida_actual,vida_anterior,direccion_busqueda
     ventana = tk.Tk()
     ventana.title("Información en tiempo real")
     ventana.geometry("300x350")
@@ -53,7 +53,7 @@ def crear_ventana_info():
 
 
     def actualizar_info():
-        global  contardg, atacar, etapa,contardgok, piso,contadormostruos1,vida,bos_detected,mensaje,moustruovida,vida_actual,vida_anterior
+        global  contardg, atacar, etapa,contardgok, piso,contadormostruos1,vida,bos_detected,mensaje,moustruovida,vida_actual,vida_anterior,direccion_busqueda
         etiqueta_dg.config(text=f"DG : {contardg} bos_detected : {bos_detected}")
         etiqueta_dgok.config(text=f"DG ok: {contardgok} mensaje : {mensaje}" )
         etiqueta_atacar.config(text=f"Atacar: {atacar}")
@@ -62,7 +62,7 @@ def crear_ventana_info():
         etiqueta_vida.config(text=f"Vida: {vida} ")
         etiqueta_Vidamostruo.config(text=f"Vidamostruo: {moustruovida}")
 
-        etiqueta_etapa.config(text=f"Etapa inicial: {etapa} \n vida_actual: {vida_actual} \n  vida_anterior: {vida_anterior}")
+        etiqueta_etapa.config(text=f"Etapa inicial: {etapa} \n vida_actual: {vida_actual} \n  vida_anterior: {vida_anterior}\n  direccion_busqueda: {direccion_busqueda}")
         ventana.after(1000, actualizar_info)  # Actualizar cada segundo
 
     actualizar_info()
@@ -1378,7 +1378,7 @@ def funcionterminar():
                     break
 
     print("funcionterminar terminada")
-
+ 
 def funcionetapa():
     global stop_flag
     while not stop_flag and not keyboard.is_pressed('delete'):
@@ -1401,6 +1401,7 @@ def funcionetapa():
         global nombre_proceso
         global piso
         global vida_actual
+        global direccion_busqueda
         global vida_anterior
         global tiempo_inicio
         print("funcionetapa en ejecución")
